@@ -1,0 +1,279 @@
+"""Discover actual scenario coverage and source scope before attempting a verdict."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+from classical_guidance import research_plan
+from classical_search import get_passage
+from utils import ensure_utf8_stdio, error_envelope, json_print, ok_envelope
+
+SCENARIOS = {
+    # (label, route, gap, ranking)
+    # ranking: 'not_implemented' | 'rule_based' —— 事项本身的日级条款（天地转杀、协纪忌日）
+    # 是否已实现。个人吉凶（协纪卷三十三相主，按出生年干支）对 selection 与 period 都已实现，
+    # 由 capabilities() 另行声明；层级见 references/26-precedence.md，不含自造权重。
+    'outlook': ('阶段运势', 'period', '个人日子吉凶按协纪相主（出生年干支）已实现；大运按《子平真诠》正官、财、伤官三章取运给十年一个喜忌（其余五格未接），与逐日分开；流年按《渊海子平》《三命通会》《滴天髓》列太岁与日柱、月柱、大运的冲克合，不合总分', 'not_implemented'),
+    'interview': ('面试', 'selection', '个人日子吉凶按相主已实现；现代面试与古法事项的映射未核，没有事项本身的日级条款', 'not_implemented'),
+    'work_conversation': ('工作沟通、谈薪、转岗', 'selection', '个人日子吉凶按相主已实现；本事项没有核过的日级条款', 'not_implemented'),
+    'exam': ('学习考试', 'selection', '个人日子吉凶按相主已实现；赴举与现代考试的适用差别未核', 'not_implemented'),
+    'relationship_conversation': ('约会、感情沟通', 'selection', '个人日子吉凶按相主已实现；本事项没有核过的日级条款', 'not_implemented'),
+    'travel': ('出行', 'selection', '通用忌日筛选（天地转杀与协纪不受吉神化解的忌日）与个人相主已实现；协纪按轻重取舍的宜忌仍缺依据', 'rule_based'),
+    'wedding': ('订婚、领证、婚礼', 'selection', '通用嫁娶忌日与双方相主已实现；具体仪式与古法名目的对应及协纪按轻重取舍的宜忌仍缺依据', 'rule_based'),
+    'moving': ('搬家、入住', 'selection', '通用般移（移徙）忌日与个人相主已实现；入宅与修造的区别、宅长、朝向及协纪按轻重取舍的宜忌仍缺依据', 'rule_based'),
+    'business': ('开业、产品与作品发布', 'selection', '通用开市忌日与个人相主已实现；产品与作品发布是否算开市及协纪按轻重取舍的宜忌仍缺依据', 'rule_based'),
+    'billing': ('报价、催款', 'selection', '个人日子吉凶按相主已实现；本事项没有核过的日级条款，不能借用买卖投资判断', 'not_implemented'),
+    'multiple_events': ('连续行程', 'itinerary', '现实联合可行性已实现；命理排名仍须每项事件各自的完整依据', 'not_implemented'),
+    'compatibility': ('关系匹配', 'specialist', '双方资料；合婚独立规则，不借用择时完成状态', 'not_implemented'),
+    'naming': ('起名改名', 'specialist', '字义、读音和使用限制；独立字词证据', 'not_implemented'),
+    'location': ('城市与场所比较', 'specialist', '实际候选及本人、方位条件的独立依据', 'not_implemented'),
+    'fengshui': ('环境与风水', 'specialist', '实际布局、朝向、测量口径及本法依据', 'not_implemented'),
+    'review': ('复盘纠错', 'specialist', '原始判断、当时输入与版本、已发生事实；不倒改为命中', 'not_implemented'),
+}
+PRECEDENCE_VERSION = 'precedence-v4'
+
+# 相主 chooses a time for the principal of an undertaking (「選擇之道……合局相主」,
+# xieji:c033:p0002). The undertakings 协纪 chooses for commoners are its
+# 「民用三十七事」; a modern event on that list is licensed by it, anything
+# else borrows the method. Borrowing is allowed — the method is general — but
+# the answer has to say so rather than read as if the book covered the event.
+YONGSHI_PASSAGE = 'xieji:c011:p0005'
+XIANGZHU_METHOD_PASSAGE = 'xieji:c033:p0002'
+XIANGZHU_AUTHORITY = {
+    'travel': ('passage', '出行', '出行在协纪民用三十七事之列'),
+    'wedding': ('passage', '嫁娶', '婚礼即嫁娶，在协纪民用三十七事之列；订婚、领证算不算嫁娶，原文没说'),
+    'moving': ('passage', '移徙', '移徙在协纪民用三十七事之列'),
+    'business': ('passage', '開市', '开业即开市，在协纪民用三十七事之列；产品与作品发布算不算开市，原文没说'),
+    'interview': ('borrowed', '上官', '面试不是上官赴任；民用三十七事里最接近的是上官'),
+    'exam': ('borrowed', '入學', '考试不是入学；民用三十七事里最接近的是入學'),
+    'relationship_conversation': ('borrowed', '會親友', '约会、感情沟通不在民用三十七事里；最接近的是會親友'),
+    'work_conversation': ('borrowed', None, '民用三十七事里没有写工作沟通、谈薪、转岗；它们算不算单子上哪一件，原文没说'),
+    'billing': ('borrowed', None, '民用三十七事里有納財、交易、立券，但报价、催款算不算其中哪一件，原文没说'),
+    'outlook': ('borrowed', None, '相主是为某件事挑时间的方法；不做具体事、只问某天好不好，不在民用三十七事里'),
+}
+CUSTOM_AUTHORITY = ('borrowed', None, '自定义事项，没有对应到民用三十七事')
+# A label naming several undertakings when the list names only one of them:
+# (the part the term covers, the rest it does not name).
+AUTHORITY_SCOPE = {'wedding': ('婚礼', '订婚、领证'), 'business': ('开业', '产品与作品发布')}
+# Terms on the list near an undertaking (or near the part a listed term does
+# not cover), none of them claimed for it. 結婚姻 reads like betrothal, but no
+# passage says 订婚 or 领证 is it.
+AUTHORITY_NEARBY = {'billing': ['納財', '交易', '立券'], 'wedding': ['結婚姻']}
+
+
+def _authority(scenario: str) -> dict:
+    kind, term, reason = XIANGZHU_AUTHORITY.get(scenario, CUSTOM_AUTHORITY)
+    entry: dict = {'kind': kind, 'reason': reason, 'method_passage_id': XIANGZHU_METHOD_PASSAGE}
+    if term:
+        entry.update(term=term, passage_id=YONGSHI_PASSAGE)
+    if scenario in AUTHORITY_SCOPE:
+        entry['covers'], entry['not_covered'] = AUTHORITY_SCOPE[scenario]
+    if scenario in AUTHORITY_NEARBY:
+        entry.update(nearby=AUTHORITY_NEARBY[scenario], passage_id=YONGSHI_PASSAGE)
+    return entry
+PERSONAL_ROUTES = ('selection', 'period')
+
+SOURCE_FILE = Path(__file__).resolve().parents[1] / 'references' / 'forecast-source-audit.json'
+EXAMPLE_HASHES = {
+    'ziping:c025:p0006': 'c66eb4f99356afdb9874419f5f184192cc55c1de61b3980de93e7492f19b9025',
+    'ziping:c025:p0008': '834ed55cfae21c4fc97cef98f153b3662d880ddebd4bbb2f149c023a99800b19',
+}
+
+
+def capabilities(scenario: str | None = None) -> list[dict]:
+    if scenario is not None and scenario not in SCENARIOS:
+        if not isinstance(scenario, str) or not scenario.strip() or len(scenario) > 80:
+            raise ValueError('scenario 须为 1–80 字符的事项名称')
+        return [{'scenario': scenario, 'label': scenario, 'route': 'period', 'custom': True,
+                 'status': 'requires_scenario_research', 'personal_ranking': 'rule_based',
+                 'precedence_version': PRECEDENCE_VERSION, 'ranking_reference': 'references/26-precedence.md',
+                 'available': ['confirmed_birth_chart', 'target_calendar'],
+                 'authority': _authority(scenario),
+                 'missing': '个人日子吉凶按相主已实现；本事项与古法名目的对应、适用条件尚待核对'}]
+    result = []
+    for key, (label, route, gap, ranking) in SCENARIOS.items():
+        if scenario is not None and key != scenario:
+            continue
+        entry: dict = {
+            'scenario': key, 'label': label, 'route': route,
+            'status': 'partial' if route != 'specialist' else 'use_specialist_workflow',
+            'available': ['confirmed_birth_chart', 'target_calendar', 'personal_relations',
+                          'two_classical_luck_examples']
+                         + (['availability_filter'] if route == 'selection' else [])
+                         + (['joint_feasibility', 'explicit_travel_buffers', 'shared_natal_catalog']
+                            if route == 'itinerary' else [])
+                         if route != 'specialist' else [],
+            'personal_ranking': 'rule_based' if route in PERSONAL_ROUTES else 'not_implemented',
+            'missing': gap,
+            'calendar_screening': 'rule_based' if ranking == 'rule_based' else 'not_implemented',
+        }
+        if route in PERSONAL_ROUTES:
+            entry['authority'] = _authority(key)
+        if ranking == 'rule_based' or route in PERSONAL_ROUTES:
+            # 排名来自冻结的布尔层级，不是权重；宿主据此判断能否给首选。
+            entry['precedence_version'] = PRECEDENCE_VERSION
+            entry['ranking_reference'] = 'references/26-precedence.md'
+        result.append(entry)
+    return result
+
+
+ROUTE_WORDS = {'period': '期间', 'selection': '择时', 'itinerary': '连续行程', 'specialist': '专项'}
+
+
+def _authority_cell(cap: dict) -> str:
+    authority = cap.get('authority')
+    if not authority:
+        return '—'
+    if authority['kind'] == 'passage':
+        scope = f"（只含{authority['covers']}）" if authority.get('covers') else ''
+        return f"协纪民用事「{authority['term']}」{scope}"
+    if authority.get('nearby'):
+        return f"借用（名目有{'、'.join(authority['nearby'])}，未核是否对应）"
+    return f"借用（最接近「{authority['term']}」）" if authority.get('term') else '借用'
+
+
+def capability_markdown() -> str:
+    """The README coverage table, from the same data the tools use."""
+    from life_guide import SCENARIO_ENTRIES
+    rows = ['| 事项 | 流程 | 个人吉凶（相主） | 原文授权 | 事项忌日 | 现实参考 |',
+            '|---|---|---|---|---|---|']
+    for cap in capabilities():
+        mapped = SCENARIO_ENTRIES.get(cap['scenario'], [])
+        parts = ['长文' if isinstance(ref, str) else f'第{ref[0]}节' for ref in mapped]
+        sections = '、'.join(dict.fromkeys(parts)) or '—'
+        rows.append(f"| {cap['label']}（`{cap['scenario']}`） | {ROUTE_WORDS[cap['route']]} | "
+                    f"{'已实现' if cap['personal_ranking'] == 'rule_based' else '—'} | {_authority_cell(cap)} | "
+                    f"{'已实现' if cap.get('calendar_screening') == 'rule_based' else '—'} | {sections} |")
+    return '\n'.join(rows)
+
+
+def source_audit() -> list[dict]:
+    rows = json.loads(SOURCE_FILE.read_text(encoding='utf-8'))['sources']
+    for row in rows:
+        if hashlib.sha256(row['text'].encode('utf-8')).hexdigest() != row['sha256']:
+            raise ValueError('古籍摘录校验失败：' + row['id'])
+        if 'oldid=' + row['revision'] not in row['source_url']:
+            raise ValueError('古籍版本指针不匹配：' + row['id'])
+    return rows
+
+
+def evidence(*, full_audit: bool = False) -> dict:
+    ids = tuple(f'ziping:c025:p{i:04}' for i in range(1, 15))
+    passages = [get_passage(pid) for pid in ids]
+    keys = ('passage_id', 'text', 'layer', 'sha256', 'book_title', 'edition',
+            'chapter_title', 'source_url', 'revision', 'transcription_status', 'facsimile_status')
+    audit = source_audit()
+    if not full_audit:
+        audit = [{key: row[key] for key in ('id', 'title', 'edition', 'chapter', 'source_url',
+                  'scope', 'plain_meaning', 'allowed_use', 'not_supported')} for row in audit]
+    return {'principle': [{key: p.get(key) for key in keys} for p in passages[:3]],
+            'context_and_exceptions': [{key: p.get(key) for key in ('passage_id', 'text', 'layer', 'sha256')}
+                                       for p in passages[3:]],
+            'context_review': {'checked_on': '2026-09-12', 'checked': '本章14段与来源页面上下文',
+                               'facsimile_checked': False,
+                               'unresolved': ['p0009 巳/丑存在版本差别，不能据此自动定支的喜忌',
+                                              '喜忌正反例还须结合各格取运章，不能略掉似喜实忌、似忌实喜等后文']},
+            'scope': '论行运的总原则及正反例；不能由此自行生成逐日逐时吉凶规则',
+            'scope_audit': audit}
+
+
+def luck_observations(natal: dict, target: dict) -> list[dict]:
+    """Two narrowly scoped textual examples, not a total luck or event verdict.
+
+    Read stems and branches separately as the cited examples require. A match
+    verifies the stated structural antecedents, not every whole-chart condition.
+    """
+    pillars = natal['four_pillars']
+    day = pillars.get('day', {}).get('stem')
+    month = pillars.get('month', {}).get('branch')
+    year = pillars.get('year', {})
+    result = []
+    for index, luck in enumerate(target['luck_catalog']):
+        if luck['status'] != 'calculated':
+            continue
+        stem, branch = luck['ganzhi']
+        matches = []
+        if (day, month, year.get('branch')) == ('丙', '子', '亥'):
+            if stem in ('丙', '丁'):
+                matches.append(('ziping-luck-bing-stem', 'ziping:c025:p0006',
+                    '这段大运的天干与代表你的丙火属于同类，原文把这项关系称为“帮身”。',
+                    ['four_pillars.day.stem', 'four_pillars.month.branch', 'four_pillars.year.branch'],
+                    '丙日、子月、亥年；本段大运天干为' + stem))
+            if branch in ('巳', '午'):
+                counterpart = '出生年支亥' if branch == '巳' else '出生月支子'
+                matches.append(('ziping-luck-bing-branch', 'ziping:c025:p0006',
+                    f'这段大运的地支{branch}与{counterpart}相冲；它与大运天干是否同类是两项不同的关系。',
+                    ['four_pillars.day.stem', 'four_pillars.month.branch', 'four_pillars.year.branch'],
+                    f'丙日、子月、亥年；本段大运地支为{branch}'))
+        if (day, month, year.get('stem')) == ('丁', '亥', '壬') and stem in ('丙', '丁'):
+            detail = ('大运的丙火与代表你的丁火属于同类，原文称为“帮身”。' if stem == '丙' else
+                      '大运天干丁与出生年干壬形成相合关系。原文的“合官”在此指这两个字的配合，不是在说获得职位。')
+            matches.append(('ziping-luck-ding-stem', 'ziping:c025:p0008', detail,
+                            ['four_pillars.day.stem', 'four_pillars.month.branch', 'four_pillars.year.stem'],
+                            '丁日、亥月、年干壬；本段大运天干为' + stem))
+        for rule, pid, text, paths, application in matches:
+            source = get_passage(pid)
+            if source['sha256'] != EXAMPLE_HASHES[pid]:
+                raise ValueError('行运例式原文已变化，须重新核查规则：' + pid)
+            result.append({'rule_id': rule, 'status': 'structural_example_matched',
+                'scope': 'active_ten_year_cycle_structure_only', 'luck_ref': index,
+                'intervals': [{'start': s['start'], 'end': s['end']} for s in target['segments']
+                              if s['facts']['active_luck_ref'] == index],
+                'personal_fields': paths, 'target_field': f'luck_catalog.{index}.ganzhi',
+                'plain_observation': text, 'personal_application': application,
+                'source': {k: source[k] for k in ('passage_id', 'text', 'layer', 'edition', 'source_url', 'sha256')},
+                'plain_meaning': '这段古文说明，同属一个五行，也要分清具体天干地支与出生盘的配合，不能一律当好或当坏。',
+                'plain_application': (
+                    f'你的出生资料换算后，代表自己的字是丁，月份对应亥，年份的天干为壬，符合书中的这组条件。'
+                    f'这段运程加入的{stem}' + ('与你同属火这一类，原文所说的同类相助指的就是这项配合。' if stem == '丙' else
+                    '与出生年干壬形成古法所说的相合关系，原文的“合官”指的是这项配合。')
+                    if pid.endswith('p0008') else
+                    '你的出生资料换算后，代表自己的字是丙，月份对应子，年份对应亥，符合书中的这组条件。'
+                    + (f'这段运程加入的{stem}也属火，因此出现原文所说的同类相助。' if rule.endswith('stem') else
+                       f'这段运程的{branch}，与出生盘里的' + ('亥' if branch == '巳' else '子') +
+                       '在传统地支配对中相对，这就是这里“相冲”的意思。')),
+                'limit': '这里核实的是书里这组配合关系。判断整体运势还要看其他干支怎样配合；这条依据没有细到每日或小时。'})
+    return result
+
+
+def research_request(scenario: str, granularity: str) -> dict:
+    gap = capabilities(scenario)[0]['missing']
+    return {'status': 'research_required', 'missing': gap, 'requested_granularity': granularity,
+            'classical_research': research_plan(scenario, compact=True),
+            'queries': ['八字 ' + gap, '协纪辨方书 ' + capabilities(scenario)[0]['label']],
+            'budget_seconds': 300, 'execution_status': 'not_started',
+            'required_record': ['作品版本与稳定定位', '原文及前后文', '正文或注文',
+                                '个人字段与目标字段', '事件与时间粒度', '前提与例外',
+                                '现代解读与原义的区别', '计算是否已经实现并验证'],
+            'instruction': '先本地检索，不足再补查可核对的古籍与上下文。当前审计不是全网无此依据的证明。'
+                           '新算法先实现验证；查证仍不足时只停止该项判断，保留已核事实。'}
+
+
+def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_stdio()
+    parser = argparse.ArgumentParser(description='查看场景能力、证据范围和补查缺口',
+        epilog='Top-level JSON keys: ok tool version capabilities; --evidence: principle '
+               'context_and_exceptions context_review scope scope_audit. Errors: error message. '
+               'capabilities[] distinguishes available calculations from unimplemented personal ranking.')
+    parser.add_argument('--capabilities', action='store_true')
+    parser.add_argument('--scenario', help='场景 id；省略时列出全部')
+    parser.add_argument('--evidence', action='store_true')
+    parser.add_argument('--capabilities-markdown', action='store_true',
+                        help='打印 README 的覆盖表（Markdown），供维护者粘贴到标记之间')
+    args = parser.parse_args(argv)
+    if args.capabilities_markdown:
+        print(capability_markdown())
+        return 0
+    try:
+        result = evidence(full_audit=True) if args.evidence else {'capabilities': capabilities(args.scenario)}
+        json_print(ok_envelope('fortune_rules', result))
+        return 0
+    except (ValueError, OSError) as exc:
+        json_print(error_envelope('fortune_rules', 'invalid_evidence', str(exc)))
+        return 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "version": "5.9.1",
+  "build": {
+    "mode": "development",
+    "commit": "81a980a5707505468a10f596f1f19c9088457a9e",
+    "dirty": false
+  },
+  "license": "LICENSE; chapter transcription licenses in knowledge/manifest.json",
+  "validation_scope": "frozen text inventory and bytes, not image collation or prediction validity"
+}

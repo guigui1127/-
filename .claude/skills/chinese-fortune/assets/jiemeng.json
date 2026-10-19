@@ -1,0 +1,2420 @@
+{
+  "symbols": [
+    {
+      "symbol": "蛇",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "蛇咬",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "蛇追",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "蛇变龙",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "龙",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "见龙在天",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "龙入怀",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "斗龙",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "虎",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "被虎追",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "驯服虎",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "虎入家",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "鱼",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "钓鱼",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "鱼跃出水",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "鱼死",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "鸟",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "鸟飞入屋",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "群鸟齐飞",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "笼中鸟",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "凤凰",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "凤凰来仪",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "凤凰涅槃",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "猫",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "猫扑人",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "猫与鼠斗",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "狗",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "狗咬人",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "群狗追逐",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "马",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "骑马奔驰",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "马失前蹄",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "牛",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "牛耕田",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "斗牛",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "羊",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "牧羊",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "羊角触人",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "猪",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "肥猪入家",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "猪逃跑",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "鸡",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "公鸡报晓",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "斗鸡",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "兔",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "白兔奔跑",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "捕兔",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "鼠",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "鼠群出没",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "捉到老鼠",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "龟",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "神龟献瑞",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "龟入屋",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "蝴蝶",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "蝴蝶绕身",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "蝴蝶死亡",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "蜜蜂",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "蜂窝",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "采蜜",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "蜘蛛",
+      "category": "动物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "蜘蛛织网",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "被蜘蛛网困",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "水",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "清水流淌",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "洪水滔天",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "渡水",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "火",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "大火熊熊",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "灭火",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "被火烧",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "山",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "登顶",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "山崩",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "树",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "古树参天",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "树枯",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "花",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "百花盛开",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "采花",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "月亮",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "明月当空",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "月食",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "太阳",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "旭日东升",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "日落",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "星星",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "流星",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "北极星",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "云",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "云开见日",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "乌云压顶",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "雷电",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "雷击物",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "电光闪烁",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "雪",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "雪花飘落",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "暴风雪",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "雨",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "及时雨",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "雨过天晴",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "海",
+      "category": "自然",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "平静海面",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "海啸",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "桥",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "顺利过桥",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "桥断",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "路",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "迷路",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "路分岔",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "房屋",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "建新房",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "房屋倒塌",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "门",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "推门而入",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "门关上",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "窗户",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "透窗远望",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "窗破",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "学校",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "考试",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "上课迟到",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "医院",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "住院",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "探病",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "坟墓",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "扫墓",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "挖坟得宝",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "庙宇",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "进庙拜神",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "庙宇崩塌",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "市场",
+      "category": "场所",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "买卖东西",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "市场空荡",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "镜子",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "镜中无影",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "镜子破碎",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "钱",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "数钱",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "钱被偷",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "金子",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "捡到金",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "藏金",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "宝玉",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "获赠宝玉",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "宝玉破裂",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "剑",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "舞剑",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "剑断",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "书",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "得新书",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "书页空白",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "船",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "扬帆远航",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "船沉",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "车",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "开车顺畅",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "车祸",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "刀",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "持刀",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "被刀伤",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "衣服",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "穿新衣",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "衣不蔽体",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "鞋",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "买新鞋",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "鞋破",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "帽子",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "戴官帽",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "丢帽",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "戒指",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "戴婚戒",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "戒指丢失",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "钥匙",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "找到钥匙",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "钥匙丢失",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "床",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "卧床",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "床塌",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "棺材",
+      "category": "物品",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "见棺材",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "扛棺材",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "婚礼",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "自己结婚",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "婚礼中断",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "葬礼",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "参加葬礼",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "自己葬礼",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "飞翔",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "飞向高空",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "飞不起来",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "坠落",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "从高处坠落",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "坠入水中",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "奔跑",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "拼命奔跑",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "跑不动",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "哭泣",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "嚎啕大哭",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "无声流泪",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "笑",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "众人大笑",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "微笑",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "战斗",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "战胜对手",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "战败",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "迷路",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "在森林迷路",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "找到出路",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "考试",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "考试得满分",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "考试不及格",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "怀孕",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "自己怀孕",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "他人怀孕",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "生子",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "生男",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "生女",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "死亡",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "梦见亲人死",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "自己死而复生",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "洗澡",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "清水沐浴",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "浴中有异物",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "吃饭",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "宴席",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "饿肚子",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "饮酒",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "对饮",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "醉酒",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "唱歌",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "众人合唱",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "唱不出声",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "跳舞",
+      "category": "行为",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "翩翩起舞",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "跳错步",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "亲人",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "见到去世的亲人",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "与父母争吵",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "朋友",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "老友重逢",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "与朋友绝交",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "陌生人",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "陌生人帮助",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "陌生人追赶",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "婴儿",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "抱婴儿",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "婴儿哭闹",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "老人",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "老人指路",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "老人过世",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "鬼",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "被鬼追",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "降伏鬼",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "神仙",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "神仙赐物",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "神仙训示",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "皇帝",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "面见皇帝",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "成为皇帝",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "孩子",
+      "category": "人物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "玩耍的孩子",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "受伤的孩子",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "白色",
+      "category": "颜色",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "白衣人",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "全白世界",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "红色",
+      "category": "颜色",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "红衣女子",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "见血",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "黑色",
+      "category": "颜色",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "黑衣人",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "黑暗中行走",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "黄色",
+      "category": "颜色",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "黄金光芒",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "黄沙漫天",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "数字3",
+      "category": "数字",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "重复出现3",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "数字7",
+      "category": "数字",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "重复出现7",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "数字8",
+      "category": "数字",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "重复出现8",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "数字9",
+      "category": "数字",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "重复出现9",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "米饭",
+      "category": "食物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "白米饭满桌",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "饭烧焦",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "肉",
+      "category": "食物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "大块吃肉",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "生肉",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "水果",
+      "category": "食物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "摘水果",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "腐烂水果",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "面条",
+      "category": "食物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "吃长面",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "茶",
+      "category": "食物",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "品茶",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "牙齿",
+      "category": "身体",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "掉牙",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "长新牙",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "头发",
+      "category": "身体",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "剃头",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "白发",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "眼睛",
+      "category": "身体",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "看见远处",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "失明",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "手",
+      "category": "身体",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "握手",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "手受伤",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "脚",
+      "category": "身体",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "光脚走",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "脚被困",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "血",
+      "category": "身体",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "流血不止",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        },
+        {
+          "scene": "他人流血",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    },
+    {
+      "symbol": "心",
+      "category": "身体",
+      "traditional": null,
+      "modern_psychology": null,
+      "common_scenarios": [
+        {
+          "scene": "心剧烈跳动",
+          "meaning": null,
+          "source_status": "unverified_no_citation"
+        }
+      ],
+      "interpretation_status": "pending_source_verification",
+      "source_status": {
+        "traditional": "unverified_no_citation",
+        "modern_psychology": "unverified_no_citation"
+      }
+    }
+  ],
+  "interpretation_policy": "保留主题、类别与场景索引; 原解释未提供可核验出处, 已删除。空值表示尚无已核验解释, 不代表疾病、事件或心理状态的判断。"
+}

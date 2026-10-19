@@ -1,0 +1,11 @@
+interface:
+  display_name: "Chinese Fortune"
+  short_description: "八字、择日、紫微、六爻等古籍白话解读；也答现实生活问题。"
+  default_prompt: >-
+    Use $chinese-fortune。先读输出契约，每次计算先取得用户现居地时间并在同请求复用。
+    出生、当前和目标时间分开。默认调用 bazi_reading.py，读取 chart_facts、
+    rule_assessment、evidence_bundle。已有原文不重复检索，不为 ge_ju 或 yong_shen 再跑诊断。
+    以子平真诠月令格局为主，对照完整条款和例外，资料够用就完成本题解释条件并回答。
+    不直接加载 knowledge/ 或 assets/ 大文件，书目用 classical_search.py --list-books。
+    先用自然白话直答，最多三条主判断；术语随文解释，短引文附出处。候选和工程分数不当个人定论。
+    逐句核对最终正文与证据，用户纠正时保留原判断和修订理由。

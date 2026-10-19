@@ -1,0 +1,244 @@
+"""Shapes the selection pipeline hands between stages and to the host.
+
+Each TypedDict is the contract for one boundary: the day rules that bar an
+event, the ranking rows built from them, the practical choice, and the
+recommendation a renderer reads. Producers declare these as their return
+types so mypy checks every key they write, and tests/test_contracts.py checks
+real outputs against the same definitions at runtime, extra keys included.
+
+No ``from __future__ import annotations`` here: TypedDict computes its
+required keys when the class is created. Optional keys live in a
+``total=False`` subclass of the required ones (``NotRequired`` is 3.11+, and
+the tools run on 3.9), which gives the same ``__required_keys__`` and
+``__optional_keys__``.
+"""
+from typing import Any, Literal, Optional, TypedDict
+
+RecommendationStatus = Literal[
+    'evidence_needed', 'participant_priority_required', 'availability_required',
+    'no_feasible_slot', 'screened_only', 'tied_no_clause_separates', 'excluded_by_clause',
+    'practical_choice', 'clause_conflict', 'screening_incomplete', 'preferences_required',
+    'practical_tie', 'personal_calendar']
+Grade = Literal['大吉', '吉', '平', '小凶', '凶', '大凶']
+PracticalStatus = Literal[
+    'no_practical_choice', 'participant_priority_required', 'clause_conflict',
+    'screening_incomplete', 'preferences_required', 'practical_tie', 'practical_choice']
+
+
+class Source(TypedDict):
+    role: str
+    passage_id: str
+    quote: str
+
+
+class _PersonalFactorRequired(TypedDict):
+    rule: str
+    label: str
+    polarity: Literal['good', 'bad', 'note']
+    grade: Grade
+    plain: str
+    quote: str
+    passage_id: str
+
+
+class PersonalFactor(_PersonalFactorRequired, total=False):
+    """One sentence of 协纪卷三十三 (相主) applied to one pillar."""
+    table: str             # the passage that defines a positional table
+    other: str             # another book's contrary rule, named not followed
+    pillar: str            # year, month, day, hour, or 'set': counted over several
+    counted: list[str]     # for 'set': the pillars whose points were counted
+
+
+class PillarContext(TypedDict):
+    ganzhi: str
+    grade: Grade
+    factors: list[PersonalFactor]
+
+
+class _PersonalDayRequired(TypedDict):
+    birth_year: str
+    day_ganzhi: str
+    grade: Grade                        # every known pillar: a 凶 year or hour is not hidden by a good day
+    pillar_grade: Grade                 # the day pillar alone, a 分项 never used to rank
+    factors: list[PersonalFactor]       # what sets ``grade``: the day's own, and the bad ones above and within it
+    context: dict[str, PillarContext]   # 'year', 'month' in full, good factors included
+
+
+class PersonalDay(_PersonalDayRequired, total=False):
+    hour_ganzhi: str       # when a clock time was chosen
+
+
+class PersonalPerson(TypedDict):
+    participant_id: str
+    birth_year: str
+    days: list[PersonalDay]
+
+
+class PersonalAssessment(TypedDict):
+    grade: Grade                        # the worst day for the worst-placed person
+    people: list[PersonalPerson]
+
+
+class _DayRuleHitRequired(TypedDict):
+    rule: str
+    kind: str
+    label: str
+    day_ganzhi: str
+    passage_id: str
+    quote: str
+    reason: str
+    plain: str                          # the reader's sentence for it
+
+
+class DayRuleHit(_DayRuleHitRequired, total=False):
+    """One sourced day rule that bars the event: 天地转杀, a 协纪 prohibition,
+    or a 相主 day that is 凶 for the person it is chosen for."""
+    # 相主 only: which pillar of the chosen time carries it, and that pillar.
+    pillar: str
+    pillar_ganzhi: str
+    # 相主 'set' only: the pillars a count (七杀 twice, 劫财 three times) took in.
+    counted: list[str]
+    # 协纪 only: the 用事 name, how the day was derived, and every passage used.
+    term: str
+    derivation: str
+    sources: list[Source]
+    # 相主 only: whose birth year the day is against.
+    participant_id: str
+    birth_year: str
+
+
+class HourHit(TypedDict):
+    """A 截路空亡 hour the window covers, located on the clock."""
+    hour_branch: str
+    day_ganzhi: str
+    rule_stem: str                      # the day whose 五鼠遁 gave the hour stem
+    derivation: str
+    passage_id: str
+    segment_start: str
+    segment_end: str
+
+
+class ContestedHourHit(TypedDict):
+    """An hour only one reading of an unresolved day names."""
+    hour_branch: str
+    day_ganzhi: str
+    rule_stem: str
+    readings: list[str]
+    segment_start: str
+    segment_end: str
+
+
+class _RankingRowRequired(TypedDict):
+    candidate_id: str
+    start: str
+    end: str
+    day_ganzhi: str
+    days: list[dict[str, Any]]
+    forbidden_hours_in_window: list[HourHit]
+    contested_hours_in_window: list[ContestedHourHit]
+    unresolved_hour_rules: list[str]
+    folk_context: list[dict[str, Any]]
+
+
+class RankingRow(_RankingRowRequired, total=False):
+    # A surviving row carries its tier; an excluded row carries what excluded it.
+    tier: int
+    sources: list[str]
+    context_sources: list[str]
+    excluded_by: list[DayRuleHit]
+    personal: PersonalAssessment
+
+
+class Unrankable(TypedDict):
+    candidate_id: str
+    start: str
+    end: str
+    reason: str
+
+
+class _RankingRequired(TypedDict):
+    scenario: str
+    mapped_terms: list[str]
+    tiers: list[RankingRow]
+    excluded: list[RankingRow]
+    unrankable: list[Unrankable]
+    tier_count: int
+    ties: bool
+    precedence_version: str
+    ranking_reference: str
+    rule_scope: str
+    scope: str
+    not_covered: list[str]
+    uses_complete_natal_chart: bool
+    personal_participant_ids: list[str]  # whose birth years graded the days
+    personal_basis: dict[str, str]
+
+
+class Ranking(_RankingRequired, total=False):
+    calendar_participant_id: str
+
+
+class FlexibleStart(TypedDict):
+    earliest: str
+    latest: str
+    latest_inclusive: bool
+
+
+class _PlacementRequired(TypedDict):
+    candidate_id: str
+    start: str
+    end: str
+    timezone: str
+    start_is_practical_boundary: bool
+
+
+class Placement(_PlacementRequired, total=False):
+    flexible_start: FlexibleStart
+    grade: Grade           # the 相主 grade of the chosen window
+
+
+class PassedOver(TypedDict):
+    candidate_id: str
+    start: str
+    end: str
+    grade: Grade
+
+
+class _PracticalChoiceRequired(TypedDict):
+    status: PracticalStatus
+    first_choice: Optional[Placement]
+    backup: Optional[Placement]
+    basis: str
+    personal_auspicious_ranking: bool
+
+
+class PracticalChoice(_PracticalChoiceRequired, total=False):
+    reason: str
+    scope: str
+    checked_options: list[Ranking]
+    alternatives: list[Placement]
+    # Better-graded windows that no clean start could use (named, not hidden).
+    passed_over: list[PassedOver]
+
+
+class _RecommendationRequired(TypedDict):
+    status: RecommendationStatus
+    first_choice: Optional[str]
+    backup: Optional[str]
+
+
+class Recommendation(_RecommendationRequired, total=False):
+    basis: str
+    remaining: list[str]
+    tied: list[str]
+    excluded: list[str]
+    precedence_version: str
+
+
+class _BlockerRequired(TypedDict):
+    code: str
+    message: str
+
+
+class Blocker(_BlockerRequired, total=False):
+    participant_id: str

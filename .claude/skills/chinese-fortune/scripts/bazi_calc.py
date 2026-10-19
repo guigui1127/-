@@ -1,0 +1,813 @@
+"""Compute a full BaZi (八字) chart.
+
+Outputs four pillars, hidden stems, 十神, weighted 五行 distribution, 日主旺衰,
+35 神煞起法命中 (driven by assets/shensha.json), 分列的扶抑/调候候选,
+格局 detection (special-format priority then 月令本气透干), 干支互动
+(合冲刑害三合三会), 纳音, 大运 sequence with 起运岁, and 流年 hints.
+
+Backed by lunar_python for the calendrical math; assets/shensha.json for 神煞
+qi-fa tables; assets/tiaohou.json (if present) for 调候用神 climate balance.
+
+Usage:
+    python bazi_calc.py --year 1990 --month 5 --day 10 --hour 14 --minute 30 \\
+        --gender male --tz 8 --longitude 116.4
+
+Optional flags:
+    --no-shensha    skip 神煞 detection
+    --no-yongshen   skip 用神/喜神/忌神
+    --no-geju       skip 格局 detection
+    --lunar         treat input as 农历
+
+Output: pretty UTF-8 JSON on stdout.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+from zoneinfo import ZoneInfo
+
+from bazi_geju import _shi_shen_safe, detect_ge_ju
+from bazi_shensha import detect_all_shensha
+from bazi_strength import day_master_strength, select_yong_shen, weighted_wuxing
+from bazi_tables import (
+    DIZHI_CHONG,
+    DIZHI_HAI,
+    DIZHI_LIU_HE,
+    PILLAR_LABELS_CN,
+    SAN_HE_GROUPS,
+    SAN_HUI_GROUPS,
+    SAN_XING_PAIRS,
+    SAN_XING_SELF,
+    SAN_XING_TRIPLES,
+    TIANGAN_HE,
+    si_ling,
+)
+from reading_support import bazi_reading_packet
+from request_time import add_request_arguments, resolve_time
+from utils import (
+    DIZHI_WUXING,
+    DIZHI_YIN_YANG,
+    DIZHI_ZODIAC,
+    HIDDEN_STEMS,
+    TIANGAN_WUXING,
+    TIANGAN_YIN_YANG,
+    UTC,
+    VENDORED_MISSING,
+    __version__,
+    ensure_utf8_stdio,
+    error_envelope,
+    json_print,
+    lookup_city,
+    normalize_birth_time,
+    parse_iso,
+    validate_birth_input,
+    warn,
+)
+
+VERSION = __version__
+
+SECT_LABELS = {
+    1: "子初换日 (23:00 起日柱按次日；农历日期仍记录所选钟面日期)",
+    2: "子正换日 (日柱取当日；晚子时的时干依库采用次日干)",
+}
+CALENDAR_ZONE = timezone(timedelta(hours=8))
+ASSETS_DIR = Path(__file__).resolve().parents[1] / "assets"
+
+
+# --------------------------------------------------------------------------- #
+# Asset loading (graceful degradation if files absent)
+# --------------------------------------------------------------------------- #
+
+def _load_json(name: str) -> dict | None:
+    path = ASSETS_DIR / name
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as e:
+        warn(f"failed to load {name}: {e}")
+        return None
+
+
+
+# 干支 互动 detection
+# --------------------------------------------------------------------------- #
+
+PILLAR_ORDER: list[str] = ["year", "month", "day", "hour"]
+
+
+def detect_interactions(pillars: dict[str, dict]) -> dict:
+    # Only the pillars actually present — a three-pillar chart has no 时柱.
+    present = [p for p in PILLAR_ORDER if p in pillars]
+    stems = [pillars[p]["stem"] for p in present]
+    branches = [pillars[p]["branch"] for p in present]
+
+    out: dict[str, list] = {
+        "tiangan_he": [],
+        "dizhi_liu_he": [],
+        "san_he": [],
+        "san_hui": [],
+        "dizhi_chong": [],
+        "dizhi_hai": [],
+        "dizhi_xing": [],
+    }
+
+    # 天干五合
+    for i in range(len(stems)):
+        for j in range(i + 1, len(stems)):
+            pair = frozenset([stems[i], stems[j]])
+            if pair in TIANGAN_HE:
+                out["tiangan_he"].append({
+                    "pair": [stems[i], stems[j]],
+                    "positions": [
+                        PILLAR_LABELS_CN[PILLAR_ORDER[i]] + "干",
+                        PILLAR_LABELS_CN[PILLAR_ORDER[j]] + "干",
+                    ],
+                    "transforms_to": TIANGAN_HE[pair],
+                })
+
+    # 地支六合
+    for i in range(len(branches)):
+        for j in range(i + 1, len(branches)):
+            pair = frozenset([branches[i], branches[j]])
+            if pair in DIZHI_LIU_HE:
+                out["dizhi_liu_he"].append({
+                    "pair": [branches[i], branches[j]],
+                    "positions": [
+                        PILLAR_LABELS_CN[PILLAR_ORDER[i]] + "支",
+                        PILLAR_LABELS_CN[PILLAR_ORDER[j]] + "支",
+                    ],
+                    "transforms_to": DIZHI_LIU_HE[pair],
+                })
+
+    # 地支三合 (全合 or 半合: 三合首字+中字, 中字+末字, 首字+末字)
+    bset = set(branches)
+    for trio, wx in SAN_HE_GROUPS:
+        present = [b for b in trio if b in bset]
+        if len(present) >= 2:
+            out["san_he"].append({
+                "branches": present,
+                "type": "全合" if len(present) == 3 else "半合",
+                "transforms_to": wx,
+            })
+
+    # 地支三会
+    for trio, wx in SAN_HUI_GROUPS:
+        present = [b for b in trio if b in bset]
+        if len(present) >= 2:
+            out["san_hui"].append({
+                "branches": present,
+                "type": "全会" if len(present) == 3 else "半会",
+                "transforms_to": wx,
+            })
+
+    # 地支六冲
+    for i in range(len(branches)):
+        for j in range(i + 1, len(branches)):
+            pair = frozenset([branches[i], branches[j]])
+            if pair in DIZHI_CHONG and branches[i] != branches[j]:
+                out["dizhi_chong"].append({
+                    "pair": [branches[i], branches[j]],
+                    "positions": [
+                        PILLAR_LABELS_CN[PILLAR_ORDER[i]] + "支",
+                        PILLAR_LABELS_CN[PILLAR_ORDER[j]] + "支",
+                    ],
+                })
+
+    # 地支六害
+    for i in range(len(branches)):
+        for j in range(i + 1, len(branches)):
+            pair = frozenset([branches[i], branches[j]])
+            if pair in DIZHI_HAI and branches[i] != branches[j]:
+                out["dizhi_hai"].append({
+                    "pair": [branches[i], branches[j]],
+                    "positions": [
+                        PILLAR_LABELS_CN[PILLAR_ORDER[i]] + "支",
+                        PILLAR_LABELS_CN[PILLAR_ORDER[j]] + "支",
+                    ],
+                })
+
+    # 三刑 (三字)
+    for trio in SAN_XING_TRIPLES:
+        present = [b for b in trio if b in bset]
+        if len(present) >= 2:
+            out["dizhi_xing"].append({
+                "branches": present,
+                "type": "三刑" if len(present) == 3 else "半刑",
+            })
+    for xing_pair in SAN_XING_PAIRS:
+        if set(xing_pair) <= bset:
+            out["dizhi_xing"].append({
+                "branches": list(xing_pair),
+                "type": "互刑",
+            })
+    for self_b in SAN_XING_SELF:
+        if branches.count(self_b) >= 2:
+            out["dizhi_xing"].append({
+                "branches": [self_b, self_b],
+                "type": "自刑",
+            })
+
+    return out
+
+
+# --------------------------------------------------------------------------- #
+# Pillar helpers
+# --------------------------------------------------------------------------- #
+
+def pillar_dict(stem: str, branch: str, nayin: str) -> dict:
+    return {
+        "stem": stem,
+        "branch": branch,
+        "ganzhi": f"{stem}{branch}",
+        "stem_wuxing": TIANGAN_WUXING.get(stem),
+        "branch_wuxing": DIZHI_WUXING.get(branch),
+        "stem_yin_yang": TIANGAN_YIN_YANG.get(stem),
+        "branch_yin_yang": DIZHI_YIN_YANG.get(branch),
+        "hidden_stems": HIDDEN_STEMS.get(branch, []),
+        "nayin": nayin,
+        "zodiac": DIZHI_ZODIAC.get(branch),
+    }
+
+
+def ten_gods_per_pillar(day_stem: str, pillars: dict) -> dict:
+    out: dict = {}
+    for label, p in pillars.items():
+        entry: dict = {"stem": None, "hidden": []}
+        if label == "day":
+            entry["stem"] = "日主"
+        else:
+            entry["stem"] = _shi_shen_safe(day_stem, p["stem"])
+        for hs in p["hidden_stems"]:
+            entry["hidden"].append({"stem": hs, "shi_shen": _shi_shen_safe(day_stem, hs)})
+        out[label] = entry
+    return out
+
+
+def _luck_from_instant(calendar_eight: Any, birth_clock: datetime,
+                       zone_name: str | None, day_stem: str,
+                       args: argparse.Namespace) -> tuple[list[dict], dict]:
+    """Use the UTC+8 calendar coordinate for both term distance and year/month.
+
+    Yun sect=1 quantizes the interval by calendar days and two-hour branches;
+    its coordinate is fixed here, never a corrected local solar clock. The
+    resulting calendar start instant is converted back to the birth timezone.
+    """
+    yun = calendar_eight.getYun(1 if args.gender == 'male' else 0, 1)
+    start_solar = yun.getStartSolar()
+    start_calendar = datetime.fromisoformat(start_solar.toYmdHms()).replace(tzinfo=CALENDAR_ZONE)
+    target_zone = ZoneInfo(zone_name) if zone_name else birth_clock.tzinfo
+    start_local = start_calendar.astimezone(target_zone)
+    start_years, start_months, start_days = yun.getStartYear(), yun.getStartMonth(), yun.getStartDay()
+    cycles: list[dict] = []
+    for d in yun.getDaYun(args.years // 10 + 2):
+        ganzhi = d.getGanZhi()
+        if not ganzhi:
+            continue
+        stem, branch = ganzhi
+        index = len(cycles)
+        band = start_years + 10 * index
+        start_year = start_local.year + 10 * index
+        cycles.append({
+            'start_age': band, 'end_age': band + 10,
+            'start_age_xusui': start_year - birth_clock.year + 1,
+            'start_year': start_year, 'end_year': start_year + 9,
+            'ganzhi': ganzhi, 'stem': stem, 'branch': branch,
+            'shi_shen': _shi_shen_safe(day_stem, stem),
+            'branch_wuxing': DIZHI_WUXING.get(branch),
+        })
+    remainder = f'{start_months}个月' if start_months else ''
+    qi_yun = {
+        'start_year': start_local.year, 'start_month': start_local.month, 'start_day': start_local.day,
+        'years': start_years, 'months': start_months, 'days': start_days,
+        'text': f'{start_years}岁{remainder}',
+        'convention': '起运间隔按年/月/日分别记录；大运年龄整数部分以起运年数为基准',
+        'method': 'lunar_python Yun sect=1：出生真实瞬间转UTC+08:00，按节距及该坐标时辰换算',
+        'algorithm_sect': 1, 'day_boundary_sect': args.sect,
+        'source': 'lunar_python 1.4.8: eightchar.Yun.__compute_start sect=1',
+        'direction': 'forward' if yun.isForward() else 'backward',
+        'interval_calendar_zone': 'UTC+08:00',
+        'date_timezone': zone_name or str(birth_clock.tzinfo),
+        'start_calendar_datetime': start_calendar.isoformat(),
+        'start_local_datetime': start_local.isoformat(),
+    }
+    return cycles, qi_yun
+
+
+# --------------------------------------------------------------------------- #
+# Argparse
+# --------------------------------------------------------------------------- #
+
+EPILOG = """Top-level JSON keys on stdout (UTF-8):
+  ok tool version hour_known sect birthplace timezone notes input true_solar_time solar_date
+  lunar_date four_pillars
+  day_master ten_gods wuxing_count day_master_strength interactions shen_sha
+  yong_shen xi_shen ji_shen ge_ju na_yin qi_yun da_yun liu_nian
+
+qi_yun: years months days text (起运 duration, 周岁).
+da_yun[]: start_age/end_age are 周岁 anchored to qi_yun.years;
+  start_age_xusui is the 虚岁 equivalent.
+
+On error: {"error": ..., "message": ...} and exit 1."""
+
+
+def build_parser(*, diagnostics: bool = True) -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        description="八字排盘 — 公历/农历、历史时区、换日口径与可选诊断"
+    ,
+        epilog=EPILOG,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p.add_argument("--year", type=int, required=True, help="出生年 (公历或农历)")
+    p.add_argument("--month", type=int, required=True, help="出生月 1-12")
+    p.add_argument("--day", type=int, required=True, help="出生日 1-31")
+    p.add_argument("--hour", type=int, default=None,
+                   help="出生时 0-23; 省略则标记未知，默认解读比较候选并保留不变的柱")
+    p.add_argument("--minute", type=int, default=0, help="出生分 0-59")
+    p.add_argument("--gender", choices=["male", "female"], required=True,
+                   help="性别 (用于排大运 + 天罗地网)")
+    p.add_argument("--tz", type=float, default=8.0,
+                   help="时区偏移小时 (默认 8 即 GMT+8); --timezone 优先")
+    p.add_argument("--city", type=str, default=None,
+                   help="出生地 (省市名/别名/拼音), 由 assets/cities_cn.json 解析为经度与"
+                        "时区; 显式 --longitude / --timezone 优先")
+    p.add_argument("--sect", type=int, choices=(1, 2), default=2,
+                   help="晚子时取日流派: 2=子正换日 (默认, 日柱取当日) "
+                        "1=子初换日 (23:00 起日柱推进). 与紫微共用同一开关")
+    p.add_argument("--timezone", type=str, default=None,
+                   help="IANA 时区名 (如 Asia/Shanghai). 给出则按出生当刻的真实"
+                        "偏移取时柱, 自动处理历史时区与夏令时")
+    p.add_argument("--fold", type=int, choices=(0, 1), default=None,
+                   help="重复当地时间: 0=第一次, 1=第二次; 无歧义时不需要")
+    p.add_argument("--time-standard", choices=("true-solar", "clock"),
+                   default="true-solar", help="时间口径, 默认真太阳时; clock 为显式钟表时")
+    p.add_argument("--longitude", type=float, default=None,
+                   help="出生地经度 (E°, 默认 120, 用于真太阳时)")
+    p.add_argument("--lunar", action="store_true",
+                   help="若指定, 视输入日期为农历")
+    p.add_argument("--years", type=int, default=80,
+                   help="大运覆盖年数 (默认 80)")
+    if diagnostics:
+        p.add_argument("--no-shensha", action="store_true", help="跳过神煞检测")
+        p.add_argument("--no-yongshen", action="store_true", help="跳过用神诊断")
+        p.add_argument("--no-geju", action="store_true", help="跳过格局诊断")
+    else:
+        p.set_defaults(no_shensha=True, no_yongshen=True, no_geju=True)
+    add_request_arguments(p, target=False)
+    p.add_argument("--as-of-year", type=int, default=None,
+                   help="固定流年参考公历年；省略时需当前所在地时区，无则只输出原局")
+    return p
+
+
+# _validate_args 曾在此 —— 它与 utils.validate_birth_input 是同一个校验器的两份
+# 逐字副本 (五条 f-string 模板一字不差), 而 utils 那份的章节注释明说自己就是从
+# 「边界校验只有 bazi_calc 一家做」抽出来的。抽出来了, 原址一行没删, 且两份已行为
+# 分叉: 检查顺序不同 (year 最后 vs 最前) 使同一非法输入报不同的违规项, 本地这份
+# 还硬编码 1900/2100 而不是用 utils 的 YEAR_MIN/YEAR_MAX, 并缺少「这个月有没有这一天」
+# 的 date() 校验。现已删除, 统一走 utils.validate_birth_input。
+
+
+# --------------------------------------------------------------------------- #
+# Main
+# --------------------------------------------------------------------------- #
+
+class _ChartError(Exception):
+    """A stage cannot continue; ``envelope`` is the result calculate_bazi returns."""
+
+    def __init__(self, envelope: dict) -> None:
+        super().__init__(envelope.get('message'))
+        self.envelope = envelope
+
+
+def _date_error(args: argparse.Namespace, error: str, exc: Exception) -> _ChartError:
+    return _ChartError({"ok": False, "tool": "bazi", "version": VERSION, "error": error,
+                        "message": str(exc), "input": vars(args)})
+
+
+@dataclass(frozen=True)
+class _Calendar:
+    """The chosen clock face (日/时) and the UTC+8 term calendar (年/月)."""
+    solar: Any
+    lunar: Any
+    birth_clock: datetime
+    calendar_clock: datetime
+    calendar_lunar: Any
+    calendar_eight: Any
+    eight: Any
+
+
+def _apply_birthplace(args: argparse.Namespace) -> dict | None:
+    # 真太阳时 info (informational + applied)
+    # 钟表时间 != 标准时. 时辰边界在整点, 而中国的钟表并非一直是 UTC+8:
+    # tzdata 记录 Asia/Shanghai 1900-1995 间 30 次偏移变化, 其中 14 段为 UTC+9
+    # (1919, 1940-1949, 1986-1991 夏令时). 落在这些窗口内的钟表读数比标准时快
+    # 一小时, 时辰边界后一小时内出生者的时柱因此整位偏移。
+    # 出生地 -> 经度/时区. Explicit --longitude / --timezone win; the table only
+    # fills what the caller left at its default.
+    birthplace = None
+    if args.city:
+        row = lookup_city(args.city)
+        if row is None:
+            raise _ChartError(error_envelope(
+                "bazi", "unknown_city",
+                f"未收录出生地: {args.city}; 请改传 --longitude 与 --timezone"))
+        lon_explicit = args.longitude is not None
+        if not lon_explicit:
+            args.longitude = row["lon"]
+        if not args.timezone:
+            args.timezone = row["tz"]
+        birthplace = {"name": row["name"], "province": row["province"],
+                      "lon": row["lon"], "lat": row["lat"], "tz": row["tz"],
+                      "longitude_source": "explicit" if lon_explicit else "city_table"}
+
+    if args.longitude is None:
+        args.longitude = 120.0  # GMT+8 reference meridian
+    return birthplace
+
+
+def _base_solar_date(args: argparse.Namespace, lunar_cls: Any,
+                     eff_hour: int, eff_minute: int) -> tuple[int, int, int]:
+    # 农历输入必须**先**转公历, 再交给任何按公历日期取值的东西。本文件有三个这样的
+    # 消费者: resolve_timezone_offset (历史夏令时按日期查表)、true_solar_time_info 与
+    # longitude_correction (均时差按 day_of_year 求)。
+    #
+    # 拿农历日期当公历用会: 对农历二月三十这类真实生日抛 ValueError (1900-2100 间
+    # 273 个); 最坏引入近 20 分钟均时差误差, 足以让时辰边界附近的人整位跳时柱;
+    # 并让 day_offset 之后的 农历+1天 撞上"该农历月只有 29/30 天"而伪造 invalid_date。
+    # 时区那一路还会整整差 1 小时 —— 1986-1991 夏令时窗口按农历日期查表会查错档。
+    #
+    # Solar.fromYmdHms 不校验日期真实性 (1990-02-31 会被接受并给出一个农历转换),
+    # 所以公历分支要自己用 date() 验一次。
+    try:
+        if args.lunar:
+            # 农历日→公历日的映射与时辰无关; 时辰在下面校正后才参与排盘。
+            _bs = lunar_cls.fromYmdHms(
+                args.year, args.month, args.day, eff_hour, eff_minute, 0
+            ).getSolar()
+            base_y, base_m, base_d = _bs.getYear(), _bs.getMonth(), _bs.getDay()
+        else:
+            base_y, base_m, base_d = args.year, args.month, args.day
+        date(base_y, base_m, base_d)
+    except Exception as e:
+        raise _date_error(args, "invalid_date", e) from e
+    return base_y, base_m, base_d
+
+
+def _calendar(args: argparse.Namespace, solar_cls: Any, base: tuple[int, int, int],
+              normalized: dict, eff_hour: int, eff_minute: int) -> _Calendar:
+    tz_info = normalized['timezone']
+    sd = normalized['solar_date']
+    try:
+        solar = solar_cls.fromYmdHms(sd['year'], sd['month'], sd['day'], sd['hour'], sd['minute'], 0)
+        lunar = solar.getLunar()
+        # Solar-term tables are in fixed UTC+8. Local clock and true-solar
+        # corrections select day/hour; they cannot move an astronomical event.
+        offset = tz_info['offset_hours'] if tz_info else args.tz
+        birth_clock = datetime(*base, eff_hour, eff_minute,
+                               tzinfo=timezone(timedelta(hours=offset)))
+        calendar_clock = birth_clock.astimezone(CALENDAR_ZONE)
+        calendar_solar = solar_cls.fromYmdHms(
+            calendar_clock.year, calendar_clock.month, calendar_clock.day,
+            calendar_clock.hour, calendar_clock.minute, calendar_clock.second)
+        calendar_lunar = calendar_solar.getLunar()
+        calendar_eight = calendar_lunar.getEightChar()
+        calendar_eight.setSect(args.sect)
+    except Exception as e:
+        raise _date_error(args, "invalid_date", e) from e
+
+    try:
+        eight = lunar.getEightChar()
+    except Exception as e:
+        raise _date_error(args, "bazi_failed", e) from e
+
+    # 晚子时取日 — 00-intake.md:34 names both schools and promises the default is
+    # stated. lunar_python: sect 2 keeps the day pillar and takes the hour stem
+    # from the next day; sect 1 rolls the day pillar at 23:00.
+    try:
+        eight.setSect(args.sect)
+    except Exception:
+        pass
+    return _Calendar(solar, lunar, birth_clock, calendar_clock, calendar_lunar, calendar_eight, eight)
+
+
+def _pillars(cal: _Calendar, hour_known: bool) -> tuple[dict, dict]:
+    """(pillars, 纳音): 年/月 from the term calendar, 日/时 from the clock face."""
+    term, face = cal.calendar_eight, cal.eight
+    na_yin = {"year": term.getYearNaYin(), "month": term.getMonthNaYin(),
+              "day": face.getDayNaYin(), "hour": face.getTimeNaYin()}
+    pillars = {
+        "year":  pillar_dict(term.getYearGan(), term.getYearZhi(), na_yin["year"]),
+        "month": pillar_dict(term.getMonthGan(), term.getMonthZhi(), na_yin["month"]),
+        "day":   pillar_dict(face.getDayGan(), face.getDayZhi(), na_yin["day"]),
+    }
+    if hour_known:
+        pillars["hour"] = pillar_dict(face.getTimeGan(), face.getTimeZhi(), na_yin["hour"])
+    return pillars, na_yin
+
+
+def _si_ling(cal: _Calendar, month_branch: str) -> dict | None:
+    # 距本月「节」的整日数 —— 司令按节令起算, 不按农历月。
+    try:
+        _pj = cal.calendar_lunar.getPrevJie().getSolar()
+        _days_since_jie = (
+            cal.calendar_clock.date()
+            - date(_pj.getYear(), _pj.getMonth(), _pj.getDay())
+        ).days
+        si_ling_info = si_ling(month_branch, _days_since_jie)
+        if si_ling_info:
+            si_ling_info["jie"] = cal.calendar_lunar.getPrevJie().getName()
+            si_ling_info["days_since_jie"] = _days_since_jie
+            si_ling_info["calendar_zone"] = "UTC+08:00"
+        return si_ling_info
+    except Exception as exc:                      # pragma: no cover - 防御
+        warn(f"si_ling failed: {exc}")
+        return None
+
+
+def _diagnostics(args: argparse.Namespace, pillars: dict, weighted_counts: dict,
+                 strength: dict) -> dict[str, Any]:
+    """神煞, 干支互动, 用神/喜神/忌神 and 格局; --no-* skips each."""
+    active = [p for p in PILLAR_ORDER if p in pillars]
+    stems_map = {p: pillars[p]["stem"] for p in active}
+    branches_map = {p: pillars[p]["branch"] for p in active}
+    day_stem, day_branch = pillars["day"]["stem"], pillars["day"]["branch"]
+    month_branch = pillars["month"]["branch"]
+
+    # 神煞
+    shensha_list: list[dict] = []
+    if not args.no_shensha:
+        shensha_data = _load_json("shensha.json")
+        try:
+            shensha_list = detect_all_shensha(
+                shensha_data,
+                day_stem=day_stem,
+                day_branch=day_branch,
+                day_ganzhi=day_stem + day_branch,
+                year_stem=pillars["year"]["stem"],
+                year_branch=pillars["year"]["branch"],
+                month_branch=month_branch,
+                stems_map=stems_map,
+                branches_map=branches_map,
+                gender=args.gender,
+            )
+        except ValueError as exc:
+            raise _ChartError(error_envelope("bazi", "unavailable_reference", str(exc))) from exc
+
+    # 干支 互动
+    interactions = detect_interactions(pillars)
+
+    # 用神 / 喜神 / 忌神
+    yong_shen = xi_shen = ji_shen = None
+    if not args.no_yongshen:
+        yj = select_yong_shen(
+            day_stem, month_branch, strength, weighted_counts
+        )
+        yong_shen = yj["yong_shen"]
+        xi_shen = yj["xi_shen"]
+        ji_shen = yj["ji_shen"]
+
+    # 格局
+    ge_ju = None
+    if not args.no_geju:
+        ge_ju = detect_ge_ju(day_stem, pillars, weighted_counts, strength)
+        ge_ju['status'] = 'candidate_only'
+        ge_ju['method_version'] = 'pattern-heuristic-1'
+        ge_ju['source_ids'] = ['ziping-month', 'ziping-rescue']
+        ge_ju['notes'] = ('格名及纯破标记为程序候选; 须逐条核验成败救应, '
+                         '不得直接推断财富、婚姻或应期。')
+    return {"interactions": interactions, "shen_sha": shensha_list, "yong_shen": yong_shen,
+            "xi_shen": xi_shen, "ji_shen": ji_shen, "ge_ju": ge_ju}
+
+
+def _liu_nian(args: argparse.Namespace, solar_cls: Any,
+              day_stem: str) -> tuple[list[dict], dict | None, int | None]:
+    """(流年 reference list, current_time_context, the year it starts from)."""
+    # The current residence's year is independent from the birth timezone.
+    liu_nian: list[dict] = []
+    current_time_context = None
+    now_year = args.as_of_year
+    if args.request_time and not args.current_timezone:
+        # A replayed absolute instant fixes which year it is without knowing
+        # where the user lives; it is not used for a local date or hour.
+        try:
+            instant = parse_iso(args.request_time)
+        except ValueError as exc:
+            raise _ChartError(error_envelope('bazi', 'invalid_time_context', str(exc))) from exc
+        if instant.tzinfo is None or instant.utcoffset() is None:
+            raise _ChartError(error_envelope('bazi', 'invalid_time_context',
+                                             '--request-time 必须含 Z 或 UTC offset；不接受无时区时刻'))
+        instant = instant.astimezone(UTC)
+        now_year = now_year if now_year is not None else instant.year
+        current_time_context = {'source': 'provided_instant', 'utc': instant.isoformat(), 'local': instant.isoformat(),
+                                'timezone': None, 'year_only': True,
+                                'note': '现居地未给：这个时刻只用来定今年是哪一年（按 UTC），不作当地日期或时辰'}
+    elif args.current_timezone or args.request_time:
+        try:
+            current_dt, current_time_context = resolve_time(args)
+            if now_year is None:
+                now_year = current_dt.year
+        except ValueError as exc:
+            raise _ChartError(error_envelope('bazi', 'invalid_time_context', str(exc))) from exc
+    try:
+        for y in range(now_year, now_year + 6) if now_year is not None else []:
+            ly = solar_cls.fromYmdHms(y, 6, 1, 12, 0, 0).getLunar()
+            gz = ly.getYearInGanZhi()
+            year_stem_y = gz[0] if gz else ""
+            liu_nian.append({
+                "year": y,
+                "ganzhi": gz,
+                "zodiac": ly.getYearShengXiao(),
+                "shi_shen": _shi_shen_safe(day_stem, year_stem_y) if year_stem_y in TIANGAN_WUXING else "",
+            })
+    except Exception as e:
+        warn(f"liu_nian failed: {e}")
+    return liu_nian, current_time_context, now_year
+
+
+def _calendar_context(args: argparse.Namespace, cal: _Calendar, hour_known: bool) -> dict[str, Any]:
+    calendar_context: dict[str, Any] = {
+        'status': 'known_instant' if hour_known else 'birth_time_required',
+        'term_calendar_zone': 'UTC+08:00',
+        'year_month_basis': '真实出生瞬间比较固定UTC+08:00交节表；与日时柱钟面分开',
+        'day_hour_basis': args.time_standard,
+        'timezone_source': 'iana' if args.timezone else 'numeric_offset_parameter',
+        'precision': '出生输入精确到分钟；交节表采用固定依赖版本的秒值，非观测误差保证',
+    }
+    if hour_known:
+        previous_jie = cal.calendar_lunar.getPrevJie()
+        next_jie = cal.calendar_lunar.getNextJie()
+        calendar_context.update({
+            'birth_instant_utc': cal.birth_clock.astimezone(UTC).isoformat(),
+            'birth_calendar_datetime': cal.calendar_clock.isoformat(),
+            'previous_jie': {
+                'name': previous_jie.getName(),
+                'calendar_datetime': datetime.fromisoformat(previous_jie.getSolar().toYmdHms())
+                                          .replace(tzinfo=CALENDAR_ZONE).isoformat(),
+            },
+            'next_jie': {
+                'name': next_jie.getName(),
+                'calendar_datetime': datetime.fromisoformat(next_jie.getSolar().toYmdHms())
+                                          .replace(tzinfo=CALENDAR_ZONE).isoformat(),
+            },
+        })
+    else:
+        calendar_context['note'] = '内部正午仅作临时计算；解读须核对当地全天候选及覆盖范围，不将正午当作生时'
+    return calendar_context
+
+
+def calculate_bazi(request: argparse.Namespace) -> dict:
+    """Compute a chart without stdout; accepts arguments from build_parser()."""
+    args = argparse.Namespace(**vars(request))
+
+    err = validate_birth_input(args.year, args.month, args.day,
+                               args.hour, args.minute, lunar=args.lunar)
+    if err:
+        return error_envelope("bazi", "invalid_input", err, input=vars(args))
+
+    try:
+        from lunar_python import Lunar, Solar  # type: ignore
+    except ImportError:
+        return error_envelope("bazi", "missing_dependency", VENDORED_MISSING)
+    try:
+        return _chart(args, Lunar, Solar)
+    except _ChartError as exc:
+        return exc.envelope
+
+
+def _chart(args: argparse.Namespace, lunar_cls: Any, solar_cls: Any) -> dict:
+    birthplace = _apply_birthplace(args)
+
+    # Unknown hours use provisional noon internally. The reading layer compares
+    # the civil date's endpoints and suppresses pillars that cross a boundary.
+    hour_known = args.hour is not None
+    eff_hour = args.hour if hour_known else 12
+    eff_minute = args.minute if hour_known else 0
+
+    base = _base_solar_date(args, lunar_cls, eff_hour, eff_minute)
+    try:
+        normalized = normalize_birth_time(
+            *base, args.hour, args.minute, args.longitude,
+            args.tz, args.timezone, args.fold, args.time_standard)
+    except ValueError as exc:
+        return error_envelope("bazi", "invalid_time", str(exc))
+    tz_info = normalized['timezone']
+    cal = _calendar(args, solar_cls, base, normalized, eff_hour, eff_minute)
+    sect_info = {"value": args.sect, "label": SECT_LABELS[args.sect]}
+
+    pillars, na_yin = _pillars(cal, hour_known)
+    day_stem = pillars["day"]["stem"]
+    month_branch = pillars["month"]["branch"]
+
+    # 十神
+    ten_gods = ten_gods_per_pillar(day_stem, pillars)
+    # Weighted 五行
+    weighted_counts, root_bonus = weighted_wuxing(pillars, day_stem)
+    si_ling_info = _si_ling(cal, month_branch)
+    strength = day_master_strength(day_stem, month_branch, weighted_counts, pillars)
+    diagnostics = _diagnostics(args, pillars, weighted_counts, strength)
+
+    # Unknown birth hours cannot establish an exact start date or duration.
+    da_yun_list: list[dict] = []
+    qi_yun: dict | None = None
+    if hour_known:
+        try:
+            da_yun_list, qi_yun = _luck_from_instant(
+                cal.calendar_eight, cal.birth_clock, args.timezone, day_stem, args)
+        except Exception as exc:
+            warn(f"da_yun unavailable: {exc}")
+
+    liu_nian, current_time_context, now_year = _liu_nian(args, solar_cls, day_stem)
+    solar, lunar = cal.solar, cal.lunar
+    result: dict[str, Any] = {
+        "ok": True,
+        "tool": "bazi",
+        "version": VERSION,
+        "input": vars(args),
+        "true_solar_time": normalized['true_solar_time'],
+        "solar_date": {
+            "year": solar.getYear(), "month": solar.getMonth(),
+            "day": solar.getDay(), "hour": solar.getHour(),
+            "minute": solar.getMinute(),
+        },
+        "lunar_date": {
+            "basis": "所选日时钟面的农历日期；农历干支日期字段不等同于实交节四柱",
+            "year": lunar.getYear(), "month": lunar.getMonth(),
+            "day": lunar.getDay(),
+            "year_in_ganzhi": lunar.getYearInGanZhi(),
+            "month_in_ganzhi": lunar.getMonthInGanZhi(),
+            "day_in_ganzhi": lunar.getDayInGanZhi(),
+            "time_in_ganzhi": lunar.getTimeInGanZhi(),
+            "year_in_chinese": lunar.getYearInChinese(),
+            "month_in_chinese": lunar.getMonthInChinese(),
+            "day_in_chinese": lunar.getDayInChinese(),
+            "zodiac": lunar.getYearShengXiao(),
+        },
+        "hour_known": hour_known,
+        "sect": sect_info,
+        "birthplace": birthplace,
+        "timezone": tz_info,
+        "calendar_context": _calendar_context(args, cal, hour_known),
+        "notes": (([] if hour_known else
+                  ["时柱待补: 内部正午的年/月/日柱与工程诊断为临时结果；"
+                   "须经解读入口的当地全天候选核对，不能保证总能固定三柱；不输出精确起运。"])
+                  + ([tz_info["note"]] if tz_info and tz_info["note"] else [])),
+        "four_pillars": (pillars if hour_known else
+                         {**pillars, "hour": {"status": "时柱待补"}}),
+        "day_master": {
+            "stem": day_stem,
+            "wuxing": TIANGAN_WUXING.get(day_stem),
+            "yin_yang": TIANGAN_YIN_YANG.get(day_stem),
+        },
+        "ten_gods": ten_gods,
+        "wuxing_count": {
+            "weighted": {k: round(v, 3) for k, v in weighted_counts.items()},
+            "root_bonus": {k: round(v, 3) for k, v in root_bonus.items()},
+        },
+        "day_master_strength": strength,
+        # 月支司令 (人元司令分野)。00-intake.md:47 把它列为每次批断必出的字段,
+        # 01-bazi.md:74 与 01-bazi-paipan.md:3 都断言「脚本已自动完成」—— 而在
+        # v1.7.3 之前输出里「司令」二字一次都不出现, 全库也没有一份分野表。
+        "yue_ling_si_ling": si_ling_info,
+        "interactions": diagnostics["interactions"],
+        "shen_sha": diagnostics["shen_sha"],
+        "yong_shen": diagnostics["yong_shen"],
+        "xi_shen": diagnostics["xi_shen"],
+        "ji_shen": diagnostics["ji_shen"],
+        "ge_ju": diagnostics["ge_ju"],
+        "na_yin": {**na_yin, "hour": na_yin["hour"] if hour_known else None},
+        "qi_yun": qi_yun,
+        "qi_yun_status": ('computed' if qi_yun else
+                          'birth_time_required' if not hour_known else 'unavailable'),
+        "da_yun": da_yun_list,
+        "liu_nian": liu_nian,
+        "current_time_context": current_time_context,
+        "liu_nian_status": ('explicit_year' if args.as_of_year is not None else
+                            'instant_year_utc' if (current_time_context or {}).get('year_only') else
+                            'current_location_year' if now_year is not None else 'needs_current_timezone'),
+        "liu_nian_scope": 'calendar_year_reference_list',
+        "liu_nian_note": '按公历年份列出年度参考；不是当前时刻已生效的年柱，立春前后须另核目标时刻',
+    }
+
+    result['schema_version'] = '2.0'
+    result['day_master_strength']['kind'] = 'heuristic'
+    result['day_master_strength']['method_version'] = 'weighted-strength-1'
+    result['reading_support'] = bazi_reading_packet(result)
+    return result
+
+
+def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_stdio()
+    args = build_parser().parse_args(argv)
+    result = calculate_bazi(args)
+    json_print(result)
+    return 0 if result.get("ok") else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
