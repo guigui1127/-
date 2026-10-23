@@ -1,0 +1,4 @@
+interface:
+  display_name: "Punk IP 插图"
+  short_description: "先选 3D 或松散水彩画风，再创建个人 IP 并自动生成长文插图"
+  default_prompt: "使用 $punk-ip-article-illustrations 开始：先问我选择松散线描水彩还是复古彩色扁平 3D，再引导我创建或选择角色。"
